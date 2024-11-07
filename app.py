@@ -51,7 +51,7 @@ with ui.layout_columns():
         fig, ax = plt.subplots()
         ax.bar(["Original Size", "Compressed Size"], [original_size, compressed_size], color=["blue", "red"])
         ax.set_ylabel("Size (bytes)")
-        ax.set_title(f"Compression Ratio: {compression_ratio:.2f}")
+        ax.set_title(f"Compression Ratio: {compression_ratio:.4f}")
         if input.show_time():
             ax.text(0.5, 0.9, f"Compression Time: {compression_time:.4f} seconds", transform=ax.transAxes, ha='center', fontsize=10, color='green')
         return fig
