@@ -1,10 +1,7 @@
 import lzma
-import numpy as np
 import matplotlib.pyplot as plt
 from shiny import App, render, ui
 import time
-
-# LZMA documentation: https://docs.python.org/3/library/lzma.html
 
 # Create UI for LZMA Compression Visualiser
 app_ui = ui.page_sidebar(
@@ -15,10 +12,6 @@ app_ui = ui.page_sidebar(
         ui.input_slider("lc", "Literal Context Bits (lc)", min=0, max=4, value=3),
         ui.input_slider("lp", "Literal Position Bits (lp)", min=0, max=4, value=0),
         ui.input_slider("pb", "Position Bits (pb)", min=0, max=4, value=2),
-        ui.input_select("mode", "Compression Mode", choices=["MODE_FAST", "MODE_NORMAL"], selected="MODE_NORMAL"),
-        ui.input_slider("nice_len", "Nice Length", min=1, max=273, value=64),
-        ui.input_select("mf", "Match Finder", choices=["MF_HC3", "MF_HC4", "MF_BT2", "MF_BT3", "MF_BT4"], selected="MF_BT4"),
-        ui.input_slider("depth", "Maximum Search Depth", min=0, max=100, value=0),
         ui.input_switch("show_details", "Show Compression Details", value=True),
         ui.input_switch("show_time", "Show Compression Time", value=True),
     ),
@@ -37,15 +30,10 @@ def server(input, output, session):
             raise ValueError("The sum of lc (Literal Context Bits) and lp (Literal Position Bits) must be at most 4.")
         # Get input data and compression parameters
         data = input.input_data().encode('utf-8')
-        level = input.level()
         dict_size = input.dictionary_size() * 1024
         lc = input.lc()
         lp = input.lp()
         pb = input.pb()
-        mode = lzma.MODE_FAST if input.mode() == "MODE_FAST" else lzma.MODE_NORMAL
-        nice_len = input.nice_len()
-        mf = input.mf()
-        depth = input.depth()
         
         # Compress data with LZMA
         start_time = time.time()
@@ -56,12 +44,7 @@ def server(input, output, session):
             'lp': lp,
             'pb': pb
         }])
-        compressed_parts = []
-        chunk_size = 1024
-        for i in range(0, len(data), chunk_size):
-            compressed_parts.append(compressor.compress(data[i:i+chunk_size]))
-        compressed_parts.append(compressor.flush())
-        compressed_data = b"".join(compressed_parts)
+        compressed_data = compressor.compress(data) + compressor.flush()
         end_time = time.time()
         compression_time = end_time - start_time
         
@@ -74,7 +57,7 @@ def server(input, output, session):
         fig, ax = plt.subplots()
         ax.bar(["Original Size", "Compressed Size"], [original_size, compressed_size], color=["blue", "red"])
         ax.set_ylabel("Size (bytes)")
-        ax.set_title(f"Compression Level: {level}, Compression Ratio: {compression_ratio:.2f}")
+        ax.set_title(f"Compression Ratio: {compression_ratio:.2f}")
         if input.show_time():
             ax.text(0.5, 0.9, f"Compression Time: {compression_time:.4f} seconds", transform=ax.transAxes, ha='center', fontsize=10, color='green')
         return fig
@@ -87,15 +70,10 @@ def server(input, output, session):
             return "Error: The sum of lc (Literal Context Bits) and lp (Literal Position Bits) must be at most 4."
         # Get input data and compression parameters
         data = input.input_data().encode('utf-8')
-        level = input.level()
         dict_size = input.dictionary_size() * 1024
         lc = input.lc()
         lp = input.lp()
         pb = input.pb()
-        mode = lzma.MODE_FAST if input.mode() == "MODE_FAST" else lzma.MODE_NORMAL
-        nice_len = input.nice_len()
-        mf = input.mf()
-        depth = input.depth()
         
         # Compress data with LZMA
         start_time = time.time()
@@ -106,12 +84,7 @@ def server(input, output, session):
             'lp': lp,
             'pb': pb
         }])
-        compressed_parts = []
-        chunk_size = 1024
-        for i in range(0, len(data), chunk_size):
-            compressed_parts.append(compressor.compress(data[i:i+chunk_size]))
-        compressed_parts.append(compressor.flush())
-        compressed_data = b"".join(compressed_parts)
+        compressed_data = compressor.compress(data) + compressor.flush()
         end_time = time.time()
         compression_time = end_time - start_time
         
@@ -124,22 +97,12 @@ def server(input, output, session):
             f"Original Size: {original_size} bytes\n"
             f"Compressed Size: {compressed_size} bytes\n"
             f"Compression Ratio: {compression_ratio:.2f}\n"
-            f"Compression Level: {level}\n"
             f"Dictionary Size: {dict_size // 1024} KB\n"
             f"Literal Context Bits (lc): {lc}\n"
             f"Literal Position Bits (lp): {lp}\n"
             f"Position Bits (pb): {pb}\n"
-            f"Mode: {input.mode()}\n"
-            f"Nice Length: {nice_len}\n"
-            f"Match Finder: {mf}\n"
-            f"Depth: {depth}\n"
         )
         if input.show_details():
-            details += "\nCompression Process Details:\n"
-            details += f"Chunks Processed: {len(compressed_parts) - 1}\n"
-            for idx, part in enumerate(compressed_parts[:-1]):
-                details += f"Chunk {idx + 1} Size: {len(part)} bytes\n"
-        if input.show_time():
             details += f"\nCompression Time: {compression_time:.4f} seconds"
         
         return details

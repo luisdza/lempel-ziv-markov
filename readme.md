@@ -1,4 +1,4 @@
-# LZMA Compression Visualizer
+# LZMA Compression Visualiser
 
 This project is a ShinyLive application for visualizing the LZMA compression algorithm. It allows users to input data, adjust compression parameters, and observe how the LZMA compression works in real-time.
 
@@ -46,10 +46,8 @@ This project is a ShinyLive application for visualizing the LZMA compression alg
 ## Dependencies
 
 - Python 3.x
-- `shiny`
 - `shinylive`
 - `matplotlib`
-- `numpy`
 
 ## License
 
