@@ -1,28 +1,23 @@
+from shiny import reactive
+from shiny.express import input, render, ui
+
 import lzma
 import matplotlib.pyplot as plt
-from shiny import App, render, ui
 import time
 
-# Create UI for LZMA Compression Visualiser
-app_ui = ui.page_sidebar(
-    ui.sidebar(
-        ui.input_text_area("input_data", "Enter Data to Compress", rows=5, value="Hello, LZMA! This is a compression test."),
-        ui.input_slider("level", "Compression Level", min=0, max=9, value=6),
-        ui.input_slider("dictionary_size", "Dictionary Size (KB)", min=4, max=1536, value=32, step=4),
-        ui.input_slider("lc", "Literal Context Bits (lc)", min=0, max=4, value=3),
-        ui.input_slider("lp", "Literal Position Bits (lp)", min=0, max=4, value=0),
-        ui.input_slider("pb", "Position Bits (pb)", min=0, max=4, value=2),
-        ui.input_switch("show_details", "Show Compression Details", value=True),
-        ui.input_switch("show_time", "Show Compression Time", value=True),
-    ),
-    ui.output_plot("compression_plot"),
-    ui.output_text("compression_summary"),
-    title="LZMA Compression Visualiser"
-)
+ui.page_opts(title="LZMA Compression Visualiser", fillable=True)
 
-# Define server logic for compression and visualisation
-def server(input, output, session):
-    @output
+with ui.sidebar(title="Filter controls"):
+    ui.input_text_area("input_data", "Enter Data to Compress", rows=5, value="Hello, LZMA! This is a compression test.")
+    ui.input_slider("level", "Compression Level", min=0, max=9, value=6)
+    ui.input_slider("dictionary_size", "Dictionary Size (KB)", min=4, max=1536, value=32, step=4)
+    ui.input_slider("lc", "Literal Context Bits (lc)", min=0, max=4, value=3)
+    ui.input_slider("lp", "Literal Position Bits (lp)", min=0, max=4, value=0)
+    ui.input_slider("pb", "Position Bits (pb)", min=0, max=4, value=2)
+    ui.input_switch("show_details", "Show Compression Details", value=True)
+    ui.input_switch("show_time", "Show Compression Time", value=True)
+
+with ui.layout_columns():
     @render.plot
     def compression_plot():
         # Validate lc + lp <= 4
@@ -62,7 +57,6 @@ def server(input, output, session):
             ax.text(0.5, 0.9, f"Compression Time: {compression_time:.4f} seconds", transform=ax.transAxes, ha='center', fontsize=10, color='green')
         return fig
     
-    @output
     @render.text
     def compression_summary():
         # Validate lc + lp <= 4
@@ -106,6 +100,3 @@ def server(input, output, session):
             details += f"\nCompression Time: {compression_time:.4f} seconds"
         
         return details
-
-# Create and run app
-app = App(app_ui, server)

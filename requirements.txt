@@ -1,2 +1,2 @@
-shinylive
+shiny
 matplotlib
