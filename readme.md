@@ -1,11 +1,11 @@
 # LZMA Compression Visualiser
 
-This project is a ShinyLive application for visualizing the LZMA compression algorithm. It allows users to input data, adjust compression parameters, and observe how the LZMA compression works in real-time.
+This project is a ShinyLive application for visualising the LZMA compression algorithm. It allows users to input data, adjust compression parameters, and observe how the LZMA compression works in real-time.
 
 ## Features
 - Input data to compress
 - Adjust various compression parameters
-- Visualize compression ratio and time
+- Visualise compression ratio and time
 - Display detailed compression process information
 
 ## Installation
