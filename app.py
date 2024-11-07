@@ -4,8 +4,10 @@ import lzma
 import matplotlib.pyplot as plt
 import time
 
+# Set the page options for the UI
 ui.page_opts(title="LZMA Compression Visualiser", fillable=True)
 
+# Define the sidebar with input controls
 with ui.sidebar(title="Filter controls"):
     ui.input_text_area("input_data", "Enter Data to Compress", rows=5, value="Hello, LZMA! This is a compression test.")
     ui.input_slider("level", "Compression Level", min=0, max=9, value=6)
@@ -16,12 +18,14 @@ with ui.sidebar(title="Filter controls"):
     ui.input_switch("show_details", "Show Compression Details", value=True)
     ui.input_switch("show_time", "Show Compression Time", value=True)
 
+# Define the layout for the main content
 with ui.layout_columns():
     @render.plot
     def compression_plot():
-        # Validate lc + lp <= 4
+        # Validate that the sum of lc and lp is at most 4
         if input.lc() + input.lp() > 4:
             raise ValueError("The sum of lc (Literal Context Bits) and lp (Literal Position Bits) must be at most 4.")
+        
         # Get input data and compression parameters
         data = input.input_data().encode('utf-8')
         dict_size = input.dictionary_size() * 1024
@@ -58,9 +62,10 @@ with ui.layout_columns():
     
     @render.text
     def compression_summary():
-        # Validate lc + lp <= 4
+        # Validate that the sum of lc and lp is at most 4
         if input.lc() + input.lp() > 4:
             return "Error: The sum of lc (Literal Context Bits) and lp (Literal Position Bits) must be at most 4."
+        
         # Get input data and compression parameters
         data = input.input_data().encode('utf-8')
         dict_size = input.dictionary_size() * 1024
@@ -86,6 +91,7 @@ with ui.layout_columns():
         compressed_size = len(compressed_data)
         compression_ratio = compressed_size / original_size if original_size > 0 else 1
         
+        # Create a detailed summary of the compression process
         details = (
             f"Original Size: {original_size} bytes\n"
             f"Compressed Size: {compressed_size} bytes\n"
