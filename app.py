@@ -29,6 +29,7 @@ app_ui = ui.page_sidebar(
 
 # Define server logic for compression and visualisation
 def server(input, output, session):
+    @output
     @render.plot
     def compression_plot():
         # Validate lc + lp <= 4
@@ -78,6 +79,7 @@ def server(input, output, session):
             ax.text(0.5, 0.9, f"Compression Time: {compression_time:.4f} seconds", transform=ax.transAxes, ha='center', fontsize=10, color='green')
         return fig
     
+    @output
     @render.text
     def compression_summary():
         # Validate lc + lp <= 4
